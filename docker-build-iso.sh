@@ -26,6 +26,6 @@ mount -t proc /proc edit/proc
 mount --bind /sys  edit/sys
 
 # Copy DNS config into the chroot
-cp /etc/resolv.conf edit/etc/resolv.conf
+#cp /etc/resolv.conf edit/etc/resolv.conf
 
 chroot edit /bin/bash -c "cat /etc/os-release"
