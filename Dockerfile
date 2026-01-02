@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     ISO_FILE=ubuntu-22.04.5-desktop-amd64.iso \
     OS_VERSION=22.04.5
 
-RUN apt-get update && \
+ENV damn="""RUN apt-get update && \
     apt-get install -y \
         wget \
         squashfs-tools \
@@ -17,15 +17,21 @@ RUN apt-get update && \
         grub-efi-amd64-signed \
         mtools \
         ca-certificates && \
+    rm -rf /var/lib/apt/lists/*"""
+
+RUN apt-get update && \
+    apt-get install -y \
+        wget \
+        squashfs-tools \
+        rsync && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /builder
 
-# Download base ISO only once (layer cache)
 RUN wget -q https://releases.ubuntu.com/${OS_VERSION}/${ISO_FILE}
 
-COPY build_iso.sh /builder/build_iso.sh
-# Add build script that will run at container runtime
-RUN chmod +x /builder/build_iso.sh
+COPY docker-build-iso.sh /builder/docker-build-iso.sh
+COPY chroot /builder/chroot
+RUN chmod +x /builder/docker-build-iso.sh
 
-CMD ["/builder/build_iso.sh"]
+CMD ["/builder/docker-build-iso.sh"]
