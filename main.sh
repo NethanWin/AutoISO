@@ -55,6 +55,7 @@ prepare_new_iso() {
   rm -f "$ISO_NEW/casper/filesystem.squashfs"
 
   # Rebuild filesystem.squashfs from ./edit
+  # This command takes most of the runtime
   mksquashfs "$EDIT" "$ISO_NEW/casper/filesystem.squashfs" \
     -noappend -comp xz
 
@@ -62,8 +63,6 @@ prepare_new_iso() {
   chroot "$EDIT" /bin/bash -c \
     "dpkg-query -W -f='\${Package} \${Version}\n'" \
     > "$ISO_NEW/casper/filesystem.manifest"
-
-  # Desktop manifest
   cp "$ISO_NEW/casper/filesystem.manifest" \
     "$ISO_NEW/casper/filesystem.manifest-desktop"
 
@@ -91,6 +90,7 @@ prepare_new_iso() {
 build_new_iso() {
   cd "$ISO_NEW"
 
+
   xorriso \
     -as mkisofs \
     -iso-level 3 \
@@ -105,6 +105,7 @@ build_new_iso() {
     .
 
   mv $WORKDIR/$NEW_ISO_NAME /output/$NEW_ISO_NAME
+  chmod 777 -R /output
   echo "New ISO created at: /output/$NEW_ISO_NAME"
 }
 
